@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dominando los Vectores en 2D y 3D - Física</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- KaTeX para fórmulas matemáticas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+    <!-- Three.js y OrbitControls para visualización 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        vectorApp: {
+                            light: '#e0f2fe',
+                            DEFAULT: '#0284c7',
+                            dark: '#0369a1',
+                            accent: '#f59e0b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .katex { font-size: 1.1em; }
+        .katex-display { margin: 0.4em 0; }
+        .hidden-view { display: none !important; }
+        canvas { touch-action: none; }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between">
+
+    <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">📐</span>
+                <div>
+                    <h1 class="text-lg font-bold tracking-wide">Vectores en Física (2D y 3D)</h1>
+                    <p class="text-xs text-sky-300">Visualización espacial y operaciones paso a paso</p>
+                </div>
+            </div>
+            <nav class="flex flex-wrap gap-1.5 justify-center">
+                <button onclick="switchView('theory')" id="nav-theory" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-600 text-white transition hover:bg-sky-500">Teoría y Conceptos</button>
+                <button onclick="switchView('visualizer')" id="nav-visualizer" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-sky-200 transition hover:bg-slate-700">Visualizador 3D / Proyecciones</button>
+                <button onclick="switchView('righthand')" id="nav-righthand" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-sky-200 transition hover:bg-slate-700">Mano Derecha (Cruz)</button>
+                <button onclick="switchView('calculator')" id="nav-calculator" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-sky-200 transition hover:bg-slate-700">Calculadora Vectorial</button>
+                <button onclick="switchView('practice')" id="nav-practice" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-sky-200 transition hover:bg-slate-700">Práctica Interactiva</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-5xl w-full mx-auto p-4 sm:p-6 flex-grow">
+        
+        <!-- VISTA 1: TEORÍA -->
+        <div id="view-theory" class="space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">Fundamentos de Vectores en Física</h2>
+                <p class="text-slate-600 text-sm">En física, un vector representa magnitudes que tienen valor numérico (módulo), dirección y sentido (como fuerza, velocidad, aceleración o campo eléctrico).</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Módulo, dirección y sentido -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                    <span class="text-xs font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full uppercase">Conceptos Básicos</span>
+                    <h3 class="font-bold text-lg text-slate-800 mt-2">Módulo, Dirección y Sentido</h3>
+                    <div class="my-3 text-center bg-slate-50 p-3 rounded-lg">
+                        <div class="math-expr" data-latex="|\vec{v}| = \sqrt{v_x^2 + v_y^2 + v_z^2}"></div>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        • <strong>Módulo:</strong> Es la longitud o tamaño del vector (Teorema de Pitágoras generalizado en 3D).<br>
+                        • <strong>Dirección:</strong> La recta sobre la cual se sitúa el vector (definida por ángulos directores o cosenos directores).<br>
+                        • <strong>Sentido:</strong> Hacia dónde apunta la flecha (indicado por el signo).
+                    </p>
+                </div>
+
+                <!-- Vectores unitarios -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                    <span class="text-xs font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full uppercase">Dirección Pura</span>
+                    <h3 class="font-bold text-lg text-slate-800 mt-2">Vectores Unitarios (<span class="math-expr" data-latex="\hat{u}"></span>)</h3>
+                    <div class="my-3 text-center bg-slate-50 p-3 rounded-lg">
+                        <div class="math-expr" data-latex="\hat{u} = \frac{\vec{v}}{|\vec{v}|} = (i, j, k)"></div>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Un vector unitario tiene módulo igual a 1. Se usa exclusivamente para indicar la dirección de un vector sin importar su tamaño. En cartesianas usamos los unitarios canónicos <span class="math-expr" data-latex="\hat{i}, \hat{j}, \hat{k}"></span> (o <span class="math-expr" data-latex="\vec{u}_x, \vec{u}_y, \vec{u}_z"></span>).
+                    </p>
+                </div>
+
+                <!-- Operaciones: Suma y Producto escalar -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                    <span class="text-xs font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full uppercase">Álgebra Vectorial</span>
+                    <h3 class="font-bold text-lg text-slate-800 mt-2">Suma y Producto Escalar</h3>
+                    <div class="my-3 text-center bg-slate-50 p-3 rounded-lg">
+                        <div class="math-expr" data-latex="\vec{a} + \vec{b} = (a_x+b_x, a_y+b_y, a_z+b_z)"></div>
+                        <div class="math-expr mt-2" data-latex="\vec{a} \cdot \vec{b} = a_x b_x + a_y b_y + a_z b_z"></div>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        • <strong>Suma:</strong> Se suman componente a componente.<br>
+                        • <strong>Producto Escalar (Dot):</strong> Da como resultado un <em>número</em> (escalar). Relacionado con el trabajo mecánico <span class="math-expr" data-latex="W = \vec{F} \cdot \vec{d}"></span>.
+                    </p>
+                </div>
+
+                <!-- Producto Vectorial -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                    <span class="text-xs font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full uppercase">Espacio 3D</span>
+                    <h3 class="font-bold text-lg text-slate-800 mt-2">Producto Vectorial (Cruz)</h3>
+                    <div class="my-3 text-center bg-slate-50 p-3 rounded-lg">
+                        <div class="math-expr" data-latex="\vec{a} \times \vec{b} = \begin{vmatrix} \hat{i} & \hat{j} & \hat{k} \\ a_x & a_y & a_z \\ b_x & b_y & b_z \end{vmatrix}"></div>
+                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        Da como resultado un <strong>nuevo vector</strong> perpendicular tanto a <span class="math-expr" data-latex="\vec{a}"></span> como a <span class="math-expr" data-latex="\vec{b}"></span>. Es fundamental en física para calcular momentos de fuerza (torque), fuerza magnética sobre cargas en movimiento, etc.
+                    </p>
+                </div>
+            </div>
+
+            <div class="text-center pt-2">
+                <button onclick="switchView('visualizer')" class="bg-sky-600 hover:bg-sky-700 text-white font-medium px-6 py-3 rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+                    Ir al Visualizador 3D y Proyecciones 🚀
+                </button>
+            </div>
+        </div>
+
+        <!-- VISTA 2: VISUALIZADOR 3D -->
+        <div id="view-visualizer" class="hidden-view space-y-4">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">Visualizador Espacial 3D & Proyecciones</h2>
+                        <p class="text-xs text-slate-600">Modifica las coordenadas de los vectores para entender su posición en el espacio y sus sombras (proyecciones) en los planos coordenados.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="resetCamera()" class="px-3 py-1.5 text-xs font-semibold bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-700 border">Centrar Cámara</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Controles de vectores -->
+                    <div class="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h3 class="font-bold text-sm text-sky-900">Vector <span class="math-expr" data-latex="\vec{a}"></span> (Azul)</h3>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div>
+                                <label class="text-xs text-slate-500 font-medium">Ax</label>
+                                <input type="number" id="v3-ax" value="3" step="1" class="w-full p-2 text-sm border rounded-lg text-center bg-white" oninput="updateVisualizer3D()">
+                            </div>
+                            <div>
+                                <label class="text-xs text-slate-500 font-medium">Ay</label>
+                                <input type="number" id="v3-ay" value="4" step="1" class="w-full p-2 text-sm border rounded-lg text-center bg-white" oninput="updateVisualizer3D()">
+                            </div>
+                            <div>
+                                <label class="text-xs text-slate-500 font-medium">Az</label>
+                                <input type="number" id="v3-az" value="5" step="1" class="w-full p-2 text-sm border rounded-lg text-center bg-white" oninput="updateVisualizer3D()">
+                            </div>
+                        </div>
+
+                        <h3 class="font-bold text-sm text-amber-900 mt-4">Vector <span class="math-expr" data-latex="\vec{b}"></span> (Naranja)</h3>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div>
+                                <label class="text-xs text-slate-500 font-medium">Bx</label>
+                                <input type="number" id="v3-bx" value="-2" step="1" class="w-full p-2 text-sm border rounded-lg text-center bg-white" oninput="updateVisualizer3D()">
+                            </div>
+                            <div>
+                                <label class="text-xs text-slate-500 font-medium">By</label>
+                                <input type="number" id="v3-by" value="3" step="1" class="w-full p-2 text-sm border rounded-lg text-center bg-white" oninput="updateVisualizer3D()">
+                            </div>
+                            <div>
+                                <label class="text-xs text-slate-500 font-medium">Bz</label>
+                                <input type="number" id="v3-bz" value="1" step="1" class="w-full p-2 text-sm border rounded-lg text-center bg-white" oninput="updateVisualizer3D()">
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-slate-200 space-y-2">
+                            <label class="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="show-projections" checked onchange="updateVisualizer3D()" class="rounded text-sky-600 focus:ring-sky-500">
+                                Mostrar Proyecciones en Planos (XY, XZ, YZ)
+                            </label>
+                            <label class="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
+                                <input type="checkbox" id="show-sum" onchange="updateVisualizer3D()" class="rounded text-sky-600 focus:ring-sky-500">
+                                Mostrar Suma <span class="math-expr" data-latex="\vec{a} + \vec{b}"></span> (Verde)
+                            </label>
+                        </div>
+
+                        <!-- Resultados en tiempo real -->
+                        <div class="bg-white p-3 rounded-lg border border-slate-200 text-xs space-y-1.5" id="vis-stats">
+                            <!-- Inyectado por JS -->
+                        </div>
+                    </div>
+
+                    <!-- Lienzo 3D Three.js -->
+                    <div class="lg:col-span-2 relative bg-slate-900 rounded-xl overflow-hidden h-[450px] shadow-inner flex items-center justify-center">
+                        <div id="canvas-container" class="w-full h-full"></div>
+                        <div class="absolute bottom-3 left-3 bg-slate-900/80 backdrop-blur text-white text-[11px] px-3 py-1.5 rounded-lg border border-slate-700 pointer-events-none flex flex-col gap-1">
+                            <div>💡 Usa el <strong>clic izquierdo + arrastrar</strong> para rotar. <strong>Rueda</strong> para zoom.</div>
+                            <div class="flex gap-3 text-[10px] font-semibold">
+                                <span class="text-red-400">■ Eje X (Rojo)</span>
+                                <span class="text-green-400">■ Eje Y (Verde)</span>
+                                <span class="text-blue-400">■ Eje Z (Azul)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 3: REGLA DE LA MANO DERECHA -->
+        <div id="view-righthand" class="hidden-view space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">Regla de la Mano Derecha (Producto Vectorial)</h2>
+                <p class="text-slate-600 text-sm mb-4">El producto vectorial <span class="math-expr" data-latex="\vec{a} \times \vec{b}"></span> tiene una dirección perpendicular a ambos vectores. ¿Cómo saber si apunta hacia arriba, hacia ti o hacia la derecha?</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-sky-50 p-4 rounded-xl border border-sky-100 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xl font-bold text-sky-700">1. Dedo Pulgar</span>
+                            <p class="text-xs text-slate-600 mt-2">Alinea los dedos de tu mano derecha (sin el pulgar) desde el primer vector <span class="math-expr" data-latex="\vec{a}"></span> hasta el segundo vector <span class="math-expr" data-latex="\vec{b}"></span> cerrando la mano.</p>
+                        </div>
+                        <span class="text-2xl mt-4 text-center">👉</span>
+                    </div>
+
+                    <div class="bg-sky-50 p-4 rounded-xl border border-sky-100 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xl font-bold text-sky-700">2. Dedo Índice / Dedos</span>
+                            <p class="text-xs text-slate-600 mt-2">Tus dedos extendidos siguen la dirección de <span class="math-expr" data-latex="\vec{a}"></span> y al doblarlos giran hacia <span class="math-expr" data-latex="\vec{b}"></span>.</p>
+                        </div>
+                        <span class="text-2xl mt-4 text-center">✋</span>
+                    </div>
+
+                    <div class="bg-sky-50 p-4 rounded-xl border border-sky-100 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xl font-bold text-sky-700">3. El Pulgar apunta...</span>
+                            <p class="text-xs text-slate-600 mt-2">El dedo pulgar extendido de forma perpendicular indicará exactamente el sentido del vector resultante <span class="math-expr" data-latex="\vec{c} = \vec{a} \times \vec{b}"></span>.</p>
+                        </div>
+                        <span class="text-2xl mt-4 text-center">👍</span>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 text-xs text-amber-900 flex items-start gap-3">
+                    <span class="text-xl">⚠️</span>
+                    <div>
+                        <strong>¡Cuidado con el orden!</strong> El producto vectorial <strong>no es conmutativo</strong>. Se cumple que <span class="math-expr" data-latex="\vec{a} \times \vec{b} = -(\vec{b} \times \vec{a})"></span>. Cambiar el orden invierte completamente el sentido del vector resultante.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 4: CALCULADORA VECTORIAL -->
+        <div id="view-calculator" class="hidden-view space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-xl font-bold text-slate-900 mb-2">Calculadora Analítica de Vectores</h2>
+                <p class="text-slate-600 text-sm mb-4">Introduce las componentes de dos vectores en 3D para calcular automáticamente su módulo, suma, producto escalar y vectorial.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h3 class="font-bold text-sm text-sky-900 mb-2">Vector <span class="math-expr" data-latex="\vec{a}"></span></h3>
+                        <div class="grid grid-cols-3 gap-2">
+                            <input type="number" id="calc-ax" value="1" class="p-2 border rounded-lg text-center text-sm bg-white" placeholder="Ax">
+                            <input type="number" id="calc-ay" value="2" class="p-2 border rounded-lg text-center text-sm bg-white" placeholder="Ay">
+                            <input type="number" id="calc-az" value="3" class="p-2 border rounded-lg text-center text-sm bg-white" placeholder="Az">
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h3 class="font-bold text-sm text-amber-900 mb-2">Vector <span class="math-expr" data-latex="\vec{b}"></span></h3>
+                        <div class="grid grid-cols-3 gap-2">
+                            <input type="number" id="calc-bx" value="4" class="p-2 border rounded-lg text-center text-sm bg-white" placeholder="Bx">
+                            <input type="number" id="calc-by" value="5" class="p-2 border rounded-lg text-center text-sm bg-white" placeholder="By">
+                            <input type="number" id="calc-bz" value="6" class="p-2 border rounded-lg text-center text-sm bg-white" placeholder="Bz">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mb-6">
+                    <button onclick="calculateVectors()" class="bg-sky-600 hover:bg-sky-700 text-white font-medium px-6 py-2.5 rounded-xl shadow-sm transition">
+                        Calcular Operaciones 🧮
+                    </button>
+                </div>
+
+                <div id="calc-results" class="hidden space-y-4">
+                    <!-- Resultados inyectados -->
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 5: PRÁCTICA INTERACTIVA -->
+        <div id="view-practice" class="hidden-view space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div class="flex justify-between items-center mb-4">
+                    <span id="quiz-category" class="text-xs font-bold text-sky-600 bg-sky-50 px-3 py-1 rounded-full">Categoría</span>
+                    <span id="quiz-progress" class="text-xs font-semibold text-slate-500">Pregunta 1 de 5</span>
+                </div>
+                
+                <div class="text-center my-6">
+                    <p class="text-slate-600 text-sm mb-3">Resuelve el siguiente problema de vectores:</p>
+                    <div id="quiz-question-text" class="text-base font-semibold text-slate-800 mb-3"></div>
+                    <div id="quiz-question-math" class="text-xl font-semibold my-2"></div>
+                </div>
+
+                <div id="quiz-options" class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-6">
+                    <!-- Opciones inyectadas por JS -->
+                </div>
+
+                <div id="quiz-feedback" class="hidden p-4 rounded-xl text-sm font-medium mb-4"></div>
+
+                <div class="flex justify-end">
+                    <button id="next-btn" onclick="nextQuestion()" class="hidden bg-sky-600 hover:bg-sky-700 text-white px-5 py-2.5 rounded-xl font-medium transition">
+                        Siguiente Pregunta →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        Aplicación educativa interactiva para estudiantes de Física · Visualización 3D y Cálculo Vectorial
+    </footer>
+
+    <script>
+        // Renderizar KaTeX
+        function renderMath() {
+            document.querySelectorAll('.math-expr').forEach(el => {
+                try {
+                    katex.render(el.dataset.latex, el, { throwOnError: false });
+                } catch(e) { console.error(e); }
+            });
+        }
+
+        // Navegación de vistas
+        function switchView(viewName) {
+            ['theory', 'visualizer', 'righthand', 'calculator', 'practice'].forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                const nav = document.getElementById(`nav-${v}`);
+                if (el) el.classList.add('hidden-view');
+                if (nav) nav.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-sky-200 transition hover:bg-slate-700";
+            });
+            
+            const activeEl = document.getElementById(`view-${viewName}`);
+            const activeNav = document.getElementById(`nav-${viewName}`);
+            if (activeEl) activeEl.classList.remove('hidden-view');
+            if (activeNav) activeNav.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-sky-600 text-white transition hover:bg-sky-500";
+
+            if (viewName === 'visualizer') {
+                initThreeJS();
+            }
+            if (viewName === 'practice' && currentQuestion === 0) {
+                loadQuestion();
+            }
+            renderMath();
+        }
+
+        // --- VISUALIZADOR 3D CON THREE.JS ---
+        let scene, camera, renderer, controls;
+        let vectorGroup;
+        let isInitialized = false;
+
+        function createTextSprite(message, colorHex) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = 128;
+            canvas.height = 128;
+            context.font = 'Bold 60px Inter, sans-serif';
+            context.fillStyle = colorHex;
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            context.fillText(message, 64, 64);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            const spriteMaterial = new THREE.SpriteMaterial({ map: texture, transparent: true });
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.scale.set(0.8, 0.8, 0.8);
+            return sprite;
+        }
+
+        function initThreeJS() {
+            if (isInitialized) {
+                onWindowResize();
+                return;
+            }
+
+            const container = document.getElementById('canvas-container');
+            if (!container) return;
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0f172a);
+
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(12, 10, 15);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+
+            // Luz
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+            scene.add(ambientLight);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+            dirLight.position.set(10, 20, 15);
+            scene.add(dirLight);
+
+            // Grilla
+            const gridHelper = new THREE.GridHelper(20, 20, 0x475569, 0x1e293b);
+            gridHelper.position.y = 0;
+            scene.add(gridHelper);
+
+            // Ejes con colores estándar (X: Rojo, Y: Verde, Z: Azul)
+            const axesHelper = new THREE.AxesHelper(10);
+            axesHelper.material.linewidth = 4;
+            // Asegurar colores visibles sobre fondo oscuro
+            axesHelper.material.depthTest = false;
+            scene.add(axesHelper);
+
+            // Etiquetas explícitas para los ejes
+            const labelX = createTextSprite('X', '#ef4444');
+            labelX.position.set(10.5, 0, 0);
+            scene.add(labelX);
+
+            const labelY = createTextSprite('Y', '#22c55e');
+            labelY.position.set(0, 10.5, 0);
+            scene.add(labelY);
+
+            const labelZ = createTextSprite('Z', '#3b82f6');
+            labelZ.position.set(0, 0, 10.5);
+            scene.add(labelZ);
+
+            vectorGroup = new THREE.Group();
+            scene.add(vectorGroup);
+
+            isInitialized = true;
+            updateVisualizer3D();
+
+            window.addEventListener('resize', onWindowResize);
+
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            if (!container || !renderer || !camera) return;
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        function resetCamera() {
+            if (!camera || !controls) return;
+            camera.position.set(12, 10, 15);
+            controls.target.set(0, 0, 0);
+            controls.update();
+        }
+
+        function updateVisualizer3D() {
+            if (!vectorGroup) return;
+
+            // Limpiar vectores anteriores
+            while(vectorGroup.children.length > 0) {
+                vectorGroup.remove(vectorGroup.children[0]);
+            }
+
+            const ax = parseFloat(document.getElementById('v3-ax').value) || 0;
+            const ay = parseFloat(document.getElementById('v3-ay').value) || 0;
+            const az = parseFloat(document.getElementById('v3-az').value) || 0;
+
+            const bx = parseFloat(document.getElementById('v3-bx').value) || 0;
+            const by = parseFloat(document.getElementById('v3-by').value) || 0;
+            const bz = parseFloat(document.getElementById('v3-bz').value) || 0;
+
+            const showProjs = document.getElementById('show-projections').checked;
+            const showSum = document.getElementById('show-sum').checked;
+
+            // Dibujar Vector A (Azul)
+            const dirA = new THREE.Vector3(ax, ay, az);
+            const lenA = dirA.length();
+            if (lenA > 0.001) {
+                const arrowA = new THREE.ArrowHelper(dirA.clone().normalize(), new THREE.Vector3(0,0,0), lenA, 0x0284c7, 0.4, 0.2);
+                vectorGroup.add(arrowA);
+            }
+
+            // Dibujar Vector B (Naranja)
+            const dirB = new THREE.Vector3(bx, by, bz);
+            const lenB = dirB.length();
+            if (lenB > 0.001) {
+                const arrowB = new THREE.ArrowHelper(dirB.clone().normalize(), new THREE.Vector3(0,0,0), lenB, 0xf59e0b, 0.4, 0.2);
+                vectorGroup.add(arrowB);
+            }
+
+            // Proyecciones de A
+            if (showProjs && lenA > 0.001) {
+                // Proyección en plano XY (x, y, 0)
+                const geomXY = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(ax, ay, az), new THREE.Vector3(ax, ay, 0)]);
+                const projXY = new THREE.Line(geomXY, new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.5 }));
+                vectorGroup.add(projXY);
+
+                // Proyección en plano XZ (x, 0, z)
+                const geomXZ = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(ax, ay, az), new THREE.Vector3(ax, 0, az)]);
+                const projXZ = new THREE.Line(geomXZ, new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.4 }));
+                vectorGroup.add(projXZ);
+
+                // Proyección en plano YZ (0, y, z)
+                const geomYZ = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(ax, ay, az), new THREE.Vector3(0, ay, az)]);
+                const projYZ = new THREE.Line(geomYZ, new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.4 }));
+                vectorGroup.add(projYZ);
+            }
+
+            // Suma (Verde)
+            if (showSum) {
+                const sumVec = new THREE.Vector3(ax + bx, ay + by, az + bz);
+                const lenSum = sumVec.length();
+                if (lenSum > 0.001) {
+                    const arrowSum = new THREE.ArrowHelper(sumVec.clone().normalize(), new THREE.Vector3(0,0,0), lenSum, 0x10b981, 0.4, 0.2);
+                    vectorGroup.add(arrowSum);
+                }
+            }
+
+            // Estadísticas
+            const stats = document.getElementById('vis-stats');
+            if (stats) {
+                stats.innerHTML = `
+                    <div><strong>Módulo <span class="math-expr" data-latex="|\\vec{a}|"></span> =</strong> ${lenA.toFixed(2)}</div>
+                    <div><strong>Módulo <span class="math-expr" data-latex="|\\vec{b}|"></span> =</strong> ${lenB.toFixed(2)}</div>
+                    <div><strong>Producto Escalar <span class="math-expr" data-latex="\\vec{a} \\cdot \\vec{b}"></span> =</strong> ${(ax*bx + ay*by + az*bz).toFixed(2)}</div>
+                `;
+                renderMath();
+            }
+        }
+
+        // --- CALCULADORA VECTORIAL ---
+        function calculateVectors() {
+            const ax = parseFloat(document.getElementById('calc-ax').value) || 0;
+            const ay = parseFloat(document.getElementById('calc-ay').value) || 0;
+            const az = parseFloat(document.getElementById('calc-az').value) || 0;
+
+            const bx = parseFloat(document.getElementById('calc-bx').value) || 0;
+            const by = parseFloat(document.getElementById('calc-by').value) || 0;
+            const bz = parseFloat(document.getElementById('calc-bz').value) || 0;
+
+            const modA = Math.sqrt(ax*ax + ay*ay + az*az);
+            const modB = Math.sqrt(bx*bx + by*by + bz*bz);
+
+            const sumX = ax + bx, sumY = ay + by, sumZ = az + bz;
+            const dot = ax*bx + ay*by + az*bz;
+            
+            // Producto vectorial a x b
+            const crossX = ay*bz - az*by;
+            const crossY = az*bx - ax*bz;
+            const crossZ = ax*by - ay*bx;
+
+            const cosTheta = (modA > 0 && modB > 0) ? dot / (modA * modB) : 0;
+            const angleRad = Math.acos(Math.max(-1, Math.min(1, cosTheta)));
+            const angleDeg = angleRad * (180 / Math.PI);
+
+            const resultsDiv = document.getElementById('calc-results');
+            resultsDiv.classList.remove('hidden');
+            resultsDiv.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2 text-sm">
+                        <h4 class="font-bold text-sky-900">Módulos y Unitarios</h4>
+                        <div>Módulo de <span class="math-expr" data-latex="\\vec{a}"></span>: <strong>${modA.toFixed(3)}</strong></div>
+                        <div>Módulo de <span class="math-expr" data-latex="\\vec{b}"></span>: <strong>${modB.toFixed(3)}</strong></div>
+                        <div>Unitario <span class="math-expr" data-latex="\\hat{u}_a"></span>: (${(ax/modA||0).toFixed(2)}, ${(ay/modA||0).toFixed(2)}, ${(az/modA||0).toFixed(2)})</div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2 text-sm">
+                        <h4 class="font-bold text-sky-900">Operaciones Principales</h4>
+                        <div>Suma <span class="math-expr" data-latex="\\vec{a} + \\vec{b}"></span>: <strong>(${sumX}, ${sumY}, ${sumZ})</strong></div>
+                        <div>Producto Escalar <span class="math-expr" data-latex="\\vec{a} \\cdot \\vec{b}"></span>: <strong>${dot.toFixed(2)}</strong></div>
+                        <div>Ángulo entre vectores: <strong>${angleDeg.toFixed(1)}°</strong></div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2 text-sm">
+                    <h4 class="font-bold text-sky-900">Producto Vectorial <span class="math-expr" data-latex="\\vec{a} \\times \\vec{b}"></span></h4>
+                    <div>Vector resultante: <strong>(${crossX}, ${crossY}, ${crossZ})</strong></div>
+                    <div class="text-xs text-slate-600">Este vector resultante es ortogonal (perpendicular) tanto a <span class="math-expr" data-latex="\\vec{a}"></span> como a <span class="math-expr" data-latex="\\vec{b}"></span>. Su módulo representa el área del paralelogramo formado por ambos vectores.</div>
+                </div>
+            `;
+            renderMath();
+        }
+
+        // --- BANCO DE PREGUNTAS / PRÁCTICA ---
+        const questions = [
+            {
+                category: "Módulo de un Vector",
+                text: "¿Cuál es el módulo del vector en 3D",
+                vectorMath: "\\vec{v} = (3, 0, 4)",
+                math: "|\\vec{v}| = ?",
+                options: ["5", "7", "25", "12"],
+                correct: 0,
+                explanation: "El módulo se calcula como √(3² + 0² + 4²) = √(9 + 16) = √25 = 5."
+            },
+            {
+                category: "Producto Escalar",
+                text: "Calcula el producto escalar de los vectores dados:",
+                vectorMath: "\\vec{a} = (1, 2, 3), \\; \\vec{b} = (4, -2, 1)",
+                math: "\\vec{a} \\cdot \\vec{b} = ?",
+                options: ["3", "9", "5", "11"],
+                correct: 0,
+                explanation: "Se multiplican componentes correspondientes y se suman: (1·4) + (2·(-2)) + (3·1) = 4 - 4 + 3 = 3."
+            },
+            {
+                category: "Vector Unitario",
+                text: "¿Cuál es el vector unitario que tiene la misma dirección que el vector",
+                vectorMath: "\\vec{v} = (0, 3, 4)",
+                math: "\\hat{u} = ?",
+                options: ["(0, 3/5, 4/5)", "(0, 3, 4)", "(0, 1, 1)", "(0, 0.5, 0.5)"],
+                correct: 0,
+                explanation: "El módulo es 5. Dividiendo cada componente entre el módulo obtenemos (0/5, 3/5, 4/5) = (0, 0.6, 0.8)."
+            },
+            {
+                category: "Suma de Vectores",
+                text: "Si tenemos los vectores",
+                vectorMath: "\\vec{a} = (2, -1, 4) \\text{ y } \\vec{b} = (-2, 5, 1)",
+                math: "\\vec{a} + \\vec{b} = ?",
+                options: ["(0, 4, 5)", "(4, -6, 3)", "(0, -5, 4)", "(-4, 5, 3)"],
+                correct: 0,
+                explanation: "Sumamos componente a componente: (2 + (-2), -1 + 5, 4 + 1) = (0, 4, 5)."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answered = false;
+
+        function loadQuestion() {
+            answered = false;
+            const q = questions[currentQuestion];
+            document.getElementById('quiz-category').innerText = q.category;
+            document.getElementById('quiz-progress').textContent = `Pregunta ${currentQuestion + 1} de ${questions.length}`;
+            
+            document.getElementById('quiz-question-text').innerHTML = `${q.text} <span class="math-expr" data-latex="${q.vectorMath}"></span>?`;
+            document.getElementById('quiz-question-math').innerHTML = `<span class="math-expr" data-latex="${q.math}"></span>`;
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "p-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-left font-medium flex items-center justify-between shadow-sm transition";
+                btn.innerHTML = `<span><span class="text-xs text-slate-400 mr-2">Opción ${index+1}</span> <span class="math-expr" data-latex="${opt}"></span></span>`;
+                btn.onclick = () => selectOption(index);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+            renderMath();
+        }
+
+        function selectOption(selectedIndex) {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestion];
+            const buttons = document.getElementById('quiz-options').children;
+            const feedback = document.getElementById('quiz-feedback');
+
+            if (selectedIndex === q.correct) {
+                buttons[selectedIndex].className = "p-4 rounded-xl border border-emerald-500 bg-emerald-50 text-emerald-900 font-medium flex items-center justify-between shadow-sm";
+                feedback.className = "p-4 rounded-xl text-sm font-medium mb-4 bg-emerald-100 text-emerald-900 border border-emerald-200";
+                feedback.innerHTML = `<strong>¡Correcto! 🎉</strong><br>${q.explanation}`;
+            } else {
+                buttons[selectedIndex].className = "p-4 rounded-xl border border-rose-500 bg-rose-50 text-rose-900 font-medium flex items-center justify-between shadow-sm";
+                buttons[q.correct].className = "p-4 rounded-xl border border-emerald-500 bg-emerald-50 text-emerald-900 font-medium flex items-center justify-between shadow-sm";
+                feedback.className = "p-4 rounded-xl text-sm font-medium mb-4 bg-rose-100 text-rose-900 border border-rose-200";
+                feedback.innerHTML = `<strong>Casi... 💡</strong><br>${q.explanation}`;
+            }
+
+            feedback.classList.remove('hidden');
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.classList.remove('hidden');
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.innerText = "Reiniciar Práctica 🔄";
+            } else {
+                nextBtn.innerText = "Siguiente Pregunta →";
+            }
+            renderMath();
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= questions.length) {
+                currentQuestion = 0;
+            }
+            loadQuestion();
+        }
+
+        window.onload = function() {
+            renderMath();
+        };
+    </script>
+</body>
+</html>

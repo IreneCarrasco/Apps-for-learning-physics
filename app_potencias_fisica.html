@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dominando las Potencias - Física</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        physics: {
+                            light: '#e0e7ff',
+                            DEFAULT: '#4f46e5',
+                            dark: '#312e81',
+                        }
+                    },
+                    animation: {
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                        'bounce-short': 'bounce-short 0.5s ease-in-out 1'
+                    },
+                    keyframes: {
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        },
+                        'bounce-short': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .katex { font-size: 1.15em; }
+        .katex-display { margin: 0.5em 0; }
+        .hidden-view { display: none !important; }
+        .option-btn { transition: all 0.2s ease; }
+        .option-btn:active { transform: scale(0.98); }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 flex flex-col justify-between">
+
+    <header class="bg-indigo-900 text-white shadow-md">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">⚡</span>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide">Potencias en Física</h1>
+                    <p class="text-xs text-indigo-200">Herramienta interactiva para superar bloqueos</p>
+                </div>
+            </div>
+            <nav class="flex flex-wrap gap-2 justify-center">
+                <button onclick="switchView('theory')" id="nav-theory" class="px-3 py-1.5 rounded-lg text-sm font-medium bg-indigo-700 text-white transition hover:bg-indigo-600">Teoría y Ejemplos</button>
+                <button onclick="switchView('practice')" id="nav-practice" class="px-3 py-1.5 rounded-lg text-sm font-medium bg-indigo-950 text-indigo-200 transition hover:bg-indigo-800">Práctica Interactiva</button>
+                <button onclick="switchView('calculator')" id="nav-calculator" class="px-3 py-1.5 rounded-lg text-sm font-medium bg-indigo-950 text-indigo-200 transition hover:bg-indigo-800">Calculadora / Trucos</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-4xl w-full mx-auto p-4 sm:p-6 flex-grow">
+        
+        <!-- VISTA 1: TEORÍA -->
+        <div id="view-theory" class="space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h2 class="text-2xl font-bold text-indigo-900 mb-2">Guía rápida de potencias aplicadas a Física</h2>
+                <p class="text-slate-600 text-sm">En física manejamos números muy grandes o muy pequeños (como la carga del electrón o la distancia entre estrellas). Dominar estas reglas te evitará muchos dolores de cabeza.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Regla 1 -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full">Misma base</span>
+                        <h3 class="font-bold text-lg text-slate-800 mt-2">Multiplicación y División</h3>
+                        <div class="my-3 text-center bg-slate-50 p-3 rounded-lg">
+                            <div class="math-expr" data-latex="a^m \cdot a^n = a^{m+n}"></div>
+                            <div class="math-expr mt-2" data-latex="\frac{a^m}{a^n} = a^{m-n}"></div>
+                        </div>
+                        <p class="text-xs text-slate-600">Si multiplicas, <strong>sumas</strong> los exponentes. Si divides, los <strong>restas</strong>.</p>
+                    </div>
+                </div>
+
+                <!-- Regla 2 -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full">Anidadas</span>
+                        <h3 class="font-bold text-lg text-slate-800 mt-2">Potencia de una Potencia</h3>
+                        <div class="my-3 text-center bg-slate-50 p-3 rounded-lg">
+                            <div class="math-expr" data-latex="(a^m)^n = a^{m \cdot n}"></div>
+                        </div>
+                        <p class="text-xs text-slate-600">Los exponentes se multiplican entre sí. Muy útil al pasar de unidades (ej. cm² a m²).</p>
+                    </div>
+                </div>
+
+                <!-- Regla 3 -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full">Inversión</span>
+                        <h3 class="font-bold text-lg text-slate-800 mt-2">Exponente Negativo</h3>
+                        <div class="my-3 text-center bg-slate-50 p-3 rounded-lg">
+                            <div class="math-expr" data-latex="a^{-n} = \frac{1}{a^n}"></div>
+                        </div>
+                        <p class="text-xs text-slate-600">El signo menos invierte la base. Vital para notación científica en denominadores (ej. m/s² = m·s⁻²).</p>
+                    </div>
+                </div>
+
+                <!-- Regla 4 -->
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full">Fracciones y Raíces</span>
+                        <h3 class="font-bold text-lg text-slate-800 mt-2">Fracciones y Exponentes Fraccionarios</h3>
+                        <div class="my-3 text-center bg-slate-50 p-3 rounded-lg">
+                            <div class="math-expr" data-latex="\left(\frac{a}{b}\right)^{-n} = \left(\frac{b}{a}\right)^n"></div>
+                            <div class="math-expr mt-2" data-latex="a^{\frac{m}{n}} = \sqrt[n]{a^m}"></div>
+                        </div>
+                        <p class="text-xs text-slate-600">Una fracción con exponente negativo se da la vuelta. Un exponente fraccionario se convierte en raíz.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center pt-4">
+                <button onclick="switchView('practice')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-6 py-3 rounded-xl shadow-md transition transform hover:-translate-y-0.5">
+                    ¡Comenzar Práctica Interactiva! 🚀
+                </button>
+            </div>
+        </div>
+
+        <!-- VISTA 2: PRÁCTICA (QUIZ) -->
+        <div id="view-practice" class="hidden-view space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <div class="flex justify-between items-center mb-4">
+                    <span id="quiz-category" class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">Categoría</span>
+                    <span id="quiz-progress" class="text-xs font-semibold text-slate-500">Pregunta 1 de 5</span>
+                </div>
+                
+                <div class="text-center my-6">
+                    <p class="text-slate-600 text-sm mb-3">Simplifica o calcula la siguiente expresión:</p>
+                    <div id="quiz-question-math" class="text-2xl font-semibold my-4"></div>
+                </div>
+
+                <div id="quiz-options" class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-6">
+                    <!-- Opciones inyectadas por JS -->
+                </div>
+
+                <div id="quiz-feedback" class="hidden p-4 rounded-xl text-sm font-medium mb-4"></div>
+
+                <div class="flex justify-end">
+                    <button id="next-btn" onclick="nextQuestion()" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-medium transition">
+                        Siguiente Pregunta →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 3: CALCULADORA Y PASO A PASO -->
+        <div id="view-calculator" class="hidden-view space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                <h2 class="text-xl font-bold text-indigo-900 mb-2">Simulador de Operaciones</h2>
+                <p class="text-slate-600 text-sm mb-4">Selecciona el tipo de operación que te atora y comprueba valores paso a paso.</p>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
+                    <button onclick="setCalcMode('mult')" id="cmode-mult" class="p-3 text-xs font-semibold rounded-xl border border-indigo-600 bg-indigo-50 text-indigo-700">Misma Base</button>
+                    <button onclick="setCalcMode('neg')" id="cmode-neg" class="p-3 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50">Exponente Negativo</button>
+                    <button onclick="setCalcMode('frac')" id="cmode-frac" class="p-3 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50">Fracciones</button>
+                    <button onclick="setCalcMode('root')" id="cmode-root" class="p-3 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50">Raíces / Fraccionario</button>
+                </div>
+
+                <!-- Panel interactivo de simulador -->
+                <div id="calc-panel" class="bg-slate-50 p-5 rounded-xl border border-slate-200 text-center space-y-4">
+                    <!-- Inyectado dinámicamente -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-slate-100 py-4 text-center text-xs text-slate-500">
+        Diseñado para ayudar a los alumnos de Física a superar los bloqueos con las potencias.
+    </footer>
+
+    <script>
+        // Renderizar KaTeX al cargar elementos
+        function renderMath() {
+            document.querySelectorAll('.math-expr').forEach(el => {
+                if(!el.dataset.rendered) {
+                    try {
+                        katex.render(el.dataset.latex, el, { throwOnError: false });
+                        el.dataset.rendered = "true";
+                    } catch(e) { console.error(e); }
+                }
+            });
+        }
+
+        // Navegación entre vistas
+        function switchView(viewName) {
+            ['theory', 'practice', 'calculator'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden-view');
+                document.getElementById(`nav-${v}`).className = "px-3 py-1.5 rounded-lg text-sm font-medium bg-indigo-950 text-indigo-200 transition hover:bg-indigo-800";
+            });
+            document.getElementById(`view-${viewName}`).classList.remove('hidden-view');
+            document.getElementById(`nav-${viewName}`).className = "px-3 py-1.5 rounded-lg text-sm font-medium bg-indigo-700 text-white transition hover:bg-indigo-600";
+
+            if(viewName === 'practice' && currentQuestion === 0) {
+                loadQuestion();
+            }
+            if(viewName === 'calculator') {
+                setCalcMode('mult');
+            }
+            renderMath();
+        }
+
+        // Banco de preguntas de práctica
+        const questions = [
+            {
+                category: "Misma Base (Multiplicación)",
+                latex: "2^3 \\cdot 2^4 = ?",
+                options: ["2^{12}", "2^7", "4^7", "2^{-1}"],
+                correct: 1,
+                explanation: "Al multiplicar potencias con la misma base, se mantiene la base (2) y se suman los exponentes (3 + 4 = 7)."
+            },
+            {
+                category: "Misma Base (División)",
+                latex: "\\frac{5^6}{5^2} = ?",
+                options: ["5^3", "1^4", "5^4", "5^8"],
+                correct: 2,
+                explanation: "Al dividir potencias con la misma base, se mantiene la base (5) y se restan los exponentes (6 - 2 = 4)."
+            },
+            {
+                category: "Exponente Negativo",
+                latex: "3^{-2} = ?",
+                options: ["-9", "-\\frac{1}{9}", "\\frac{1}{9}", "9"],
+                correct: 2,
+                explanation: "El exponente negativo invierte la base: 3⁻² = 1 / 3² = 1 / 9."
+            },
+            {
+                category: "Potencia de una Potencia",
+                latex: "(10^2)^3 = ?",
+                options: ["10^5", "10^6", "100^3", "10^{2.3}"],
+                correct: 1,
+                explanation: "La potencia de una potencia multiplica los exponentes: (10²)³ = 10^(2·3) = 10⁶."
+            },
+            {
+                category: "Fracciones y Raíces",
+                latex: "8^{\\frac{1}{3}} = ?",
+                options: ["2", "4", "\\frac{8}{3}", "\\sqrt{8}"],
+                correct: 0,
+                explanation: "Un exponente fraccionario 1/3 equivale a una raíz cúbica: ³√8 = 2 (porque 2·2·2 = 8)."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answered = false;
+
+        function loadQuestion() {
+            answered = false;
+            const q = questions[currentQuestion];
+            document.getElementById('quiz-category').innerText = q.category;
+            document.getElementById('quiz-progress').textContent = `Pregunta ${currentQuestion + 1} de ${questions.length}`;
+            
+            const mathContainer = document.getElementById('quiz-question-math');
+            mathContainer.innerHTML = `<span class="math-expr" data-latex="${q.latex}"></span>`;
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn p-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-left font-medium flex items-center justify-between shadow-sm";
+                btn.innerHTML = `<span><span class="text-xs text-slate-400 mr-2">Opción ${index+1}</span> <span class="math-expr" data-latex="${opt}"></span></span>`;
+                btn.onclick = () => selectOption(index);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+            renderMath();
+        }
+
+        function selectOption(selectedIndex) {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestion];
+            const buttons = document.getElementById('quiz-options').children;
+            const feedback = document.getElementById('quiz-feedback');
+
+            if (selectedIndex === q.correct) {
+                buttons[selectedIndex].className = "option-btn p-4 rounded-xl border border-emerald-500 bg-emerald-50 text-emerald-900 font-medium flex items-center justify-between shadow-sm animate-bounce-short";
+                feedback.className = "p-4 rounded-xl text-sm font-medium mb-4 bg-emerald-100 text-emerald-900 border border-emerald-200";
+                feedback.innerHTML = `<strong>¡Correcto! 🎉</strong><br>${q.explanation}`;
+            } else {
+                buttons[selectedIndex].className = "option-btn p-4 rounded-xl border border-rose-500 bg-rose-50 text-rose-900 font-medium flex items-center justify-between shadow-sm animate-shake";
+                buttons[q.correct].className = "option-btn p-4 rounded-xl border border-emerald-500 bg-emerald-50 text-emerald-900 font-medium flex items-center justify-between shadow-sm";
+                feedback.className = "p-4 rounded-xl text-sm font-medium mb-4 bg-rose-100 text-rose-900 border border-rose-200";
+                feedback.innerHTML = `<strong>Casi... 💡</strong><br>${q.explanation}`;
+            }
+
+            feedback.classList.remove('hidden');
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.classList.remove('hidden');
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.innerText = "Reiniciar Práctica 🔄";
+            } else {
+                nextBtn.innerText = "Siguiente Pregunta →";
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= questions.length) {
+                currentQuestion = 0;
+            }
+            loadQuestion();
+        }
+
+        // Simulador interactivo de calculadora
+        function setCalcMode(mode) {
+            ['mult', 'neg', 'frac', 'root'].forEach(m => {
+                const btn = document.getElementById(`cmode-${m}`);
+                if (m === mode) {
+                    btn.className = "p-3 text-xs font-semibold rounded-xl border border-indigo-600 bg-indigo-50 text-indigo-700";
+                } else {
+                    btn.className = "p-3 text-xs font-semibold rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50";
+                }
+            });
+
+            const panel = document.getElementById('calc-panel');
+            if (mode === 'mult') {
+                panel.innerHTML = `
+                    <p class="text-sm font-medium text-slate-700">Calculadora de multiplicación con misma base:</p>
+                    <div class="flex items-center justify-center gap-2 flex-wrap">
+                        <span class="text-base font-semibold">Base:</span>
+                        <input id="cm-base" type="number" value="2" class="w-16 p-2 border rounded-lg text-center" oninput="calcMult()">
+                        <span class="text-base font-semibold">Exponente 1:</span>
+                        <input id="cm-e1" type="number" value="3" class="w-16 p-2 border rounded-lg text-center" oninput="calcMult()">
+                        <span class="text-base font-semibold">Exponente 2:</span>
+                        <input id="cm-e2" type="number" value="4" class="w-16 p-2 border rounded-lg text-center" oninput="calcMult()">
+                    </div>
+                    <div id="cm-result" class="mt-4 p-3 bg-white rounded-lg border border-slate-200 text-indigo-900 font-semibold"></div>
+                `;
+                calcMult();
+            } else if (mode === 'neg') {
+                panel.innerHTML = `
+                    <p class="text-sm font-medium text-slate-700">Conversor de Exponente Negativo:</p>
+                    <div class="flex items-center justify-center gap-2 flex-wrap">
+                        <span class="text-base font-semibold">Base:</span>
+                        <input id="cn-base" type="number" value="5" class="w-16 p-2 border rounded-lg text-center" oninput="calcNeg()">
+                        <span class="text-base font-semibold">Exponente Negativo:</span>
+                        <input id="cn-exp" type="number" value="3" class="w-16 p-2 border rounded-lg text-center" oninput="calcNeg()">
+                    </div>
+                    <div id="cn-result" class="mt-4 p-3 bg-white rounded-lg border border-slate-200 text-indigo-900 font-semibold"></div>
+                `;
+                calcNeg();
+            } else if (mode === 'frac') {
+                panel.innerHTML = `
+                    <p class="text-sm font-medium text-slate-700">Potencia de una Fracción con Exponente Negativo:</p>
+                    <div class="flex items-center justify-center gap-2 flex-wrap">
+                        <span class="text-base font-semibold">Numerador:</span>
+                        <input id="cf-num" type="number" value="2" class="w-16 p-2 border rounded-lg text-center" oninput="calcFrac()">
+                        <span class="text-base font-semibold">Denominador:</span>
+                        <input id="cf-den" type="number" value="3" class="w-16 p-2 border rounded-lg text-center" oninput="calcFrac()">
+                        <span class="text-base font-semibold">Exponente:</span>
+                        <input id="cf-exp" type="number" value="-2" class="w-16 p-2 border rounded-lg text-center" oninput="calcFrac()">
+                    </div>
+                    <div id="cf-result" class="mt-4 p-3 bg-white rounded-lg border border-slate-200 text-indigo-900 font-semibold"></div>
+                `;
+                calcFrac();
+            } else if (mode === 'root') {
+                panel.innerHTML = `
+                    <p class="text-sm font-medium text-slate-700">Exponente Fraccionario (Raíces):</p>
+                    <div class="flex items-center justify-center gap-2 flex-wrap">
+                        <span class="text-base font-semibold">Base:</span>
+                        <input id="cr-base" type="number" value="27" class="w-16 p-2 border rounded-lg text-center" oninput="calcRoot()">
+                        <span class="text-base font-semibold">Numerador (Potencia):</span>
+                        <input id="cr-num" type="number" value="1" class="w-16 p-2 border rounded-lg text-center" oninput="calcRoot()">
+                        <span class="text-base font-semibold">Denominador (Índice Raíz):</span>
+                        <input id="cr-den" type="number" value="3" class="w-16 p-2 border rounded-lg text-center" oninput="calcRoot()">
+                    </div>
+                    <div id="cr-result" class="mt-4 p-3 bg-white rounded-lg border border-slate-200 text-indigo-900 font-semibold"></div>
+                `;
+                calcRoot();
+            }
+        }
+
+        function calcMult() {
+            const b = document.getElementById('cm-base').value;
+            const e1 = parseInt(document.getElementById('cm-e1').value) || 0;
+            const e2 = parseInt(document.getElementById('cm-e2').value) || 0;
+            const sum = e1 + e2;
+            const res = document.getElementById('cm-result');
+            res.innerHTML = `<div class="math-expr" data-latex="${b}^{${e1}} \\cdot ${b}^{${e2}} = ${b}^{${e1}+(${e2})} = ${b}^{${sum}}"></div>`;
+            renderMath();
+        }
+
+        function calcNeg() {
+            const b = document.getElementById('cn-base').value;
+            const e = parseInt(document.getElementById('cn-exp').value) || 0;
+            const res = document.getElementById('cn-result');
+            res.innerHTML = `<div class="math-expr" data-latex="${b}^{-${e}} = \\frac{1}{${b}^{${e}}} = \\frac{1}{${Math.pow(b, e)}}"></div>`;
+            renderMath();
+        }
+
+        function calcFrac() {
+            const num = document.getElementById('cf-num').value;
+            const den = document.getElementById('cf-den').value;
+            const exp = parseInt(document.getElementById('cf-exp').value) || 0;
+            const res = document.getElementById('cf-result');
+            if(exp < 0) {
+                const posExp = Math.abs(exp);
+                res.innerHTML = `<div class="math-expr" data-latex="\\left(\\frac{${num}}{${den}}\\right)^{${exp}} = \\left(\\frac{${den}}{${num}}\\right)^{${posExp}} = \\frac{${Math.pow(den, posExp)}}{${Math.pow(num, posExp)}}"></div>`;
+            } else {
+                res.innerHTML = `<div class="math-expr" data-latex="\\left(\\frac{${num}}{${den}}\\right)^{${exp}} = \\frac{${Math.pow(num, exp)}}{${Math.pow(den, exp)}}"></div>`;
+            }
+            renderMath();
+        }
+
+        function calcRoot() {
+            const b = document.getElementById('cr-base').value;
+            const num = document.getElementById('cr-num').value;
+            const den = document.getElementById('cr-den').value;
+            const res = document.getElementById('cr-result');
+            const evalVal = Math.pow(b, num / den);
+            res.innerHTML = `<div class="math-expr" data-latex="${b}^{\\frac{${num}}{${den}}} = \\sqrt[${den}]{${b}^{${num}}} \\approx ${evalVal.toFixed(3)}"></div>`;
+            renderMath();
+        }
+
+        // Inicializar KaTeX en la carga inicial
+        window.onload = function() {
+            renderMath();
+        };
+    </script>
+</body>
+</html>
